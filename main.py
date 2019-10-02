@@ -1,8 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-print('hello')
-
 #  ITEMS FOR NUMERICAL CALCULATION
 tvec = np.arange(0, 10, 0.07)  # time vector
 dvec = np.arange(0, 700, 7)  # distance vector
