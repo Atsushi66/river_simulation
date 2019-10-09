@@ -73,7 +73,7 @@ for k in range(1, tvec.size-1):
 
         if (l == a):
             SSin =  A
-        elif (l = b):
+        elif (l == b):
             SSin = B
         else:
             SSin = ck[k, l-1]
