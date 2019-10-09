@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from util import runge_kutta
 
 #  ITEMS FOR NUMERICAL CALCULATION
 tvec = np.arange(0, 10, 0.07)  # time vector
@@ -56,21 +57,29 @@ for k in range(1, tvec.size-1):
     for l in range(1, dvec.size):
 
         # (1) concentration of bacteria
-        rX_rk1[k, l] = u_max * cS[k, l] /(KS + cS[k, l]) *cX[k, l] - b * cX[k, l]
-        diff1_rk1 = (qflow / volume_element *(cX[k, l-1] - cX[k, l]) + rX_rk1[k, l]) * dt
+        # rX_rk1[k, l] = u_max * cS[k, l] /(KS + cS[k, l]) *cX[k, l] - b * cX[k, l]
+        # diff1_rk1 = (qflow / volume_element *(cX[k, l-1] - cX[k, l]) + rX_rk1[k, l]) * dt
 
-        rX_rk2[k, l] = u_max * (cS[k, l] + 1/2 *diff1_rk1) /(KS + (cS[k, l] + 1/2 *diff1_rk1)) *(cX[k, l] + 1/2 *diff1_rk1) - b * (cX[k, l] + 1/2 *diff1_rk1)
-        diff1_rk2 = (qflow / volume_element *(cX[k, l-1] - (cX[k, l] + 1/2 *diff1_rk1)) + rX_rk2[k, l]) * dt
+        # rX_rk2[k, l] = u_max * (cS[k, l] + 1/2 *diff1_rk1) /(KS + (cS[k, l] + 1/2 *diff1_rk1)) *(cX[k, l] + 1/2 *diff1_rk1) - b * (cX[k, l] + 1/2 *diff1_rk1)
+        # diff1_rk2 = (qflow / volume_element *(cX[k, l-1] - (cX[k, l] + 1/2 *diff1_rk1)) + rX_rk2[k, l]) * dt
 
-        rX_rk3[k, l] = u_max * (cS[k, l] + 1/2 *diff1_rk2) /(KS + (cS[k, l] + 1/2 *diff1_rk2)) *(cX[k, l] + 1/2 *diff1_rk2) - b * (cX[k, l] + 1/2 *diff1_rk2)
-        diff1_rk3 = (qflow / volume_element *(cX[k, l-1] - (cX[k, l] + 1/2 *diff1_rk2)) + rX_rk1[k, l]) * dt
+        # rX_rk3[k, l] = u_max * (cS[k, l] + 1/2 *diff1_rk2) /(KS + (cS[k, l] + 1/2 *diff1_rk2)) *(cX[k, l] + 1/2 *diff1_rk2) - b * (cX[k, l] + 1/2 *diff1_rk2)
+        # diff1_rk3 = (qflow / volume_element *(cX[k, l-1] - (cX[k, l] + 1/2 *diff1_rk2)) + rX_rk1[k, l]) * dt
 
-        rX_rk4[k, l] = u_max * (cS[k, l] + diff1_rk3) /(KS + (cS[k, l] + diff1_rk3)) *(cX[k, l] + diff1_rk3) - b * (cX[k, l] + diff1_rk3)
-        diff1_rk4 = (qflow / volume_element *(cX[k, l-1] - (cX[k, l] + diff1_rk3)) + rX_rk1[k, l]) * dt
+        # rX_rk4[k, l] = u_max * (cS[k, l] + diff1_rk3) /(KS + (cS[k, l] + diff1_rk3)) *(cX[k, l] + diff1_rk3) - b * (cX[k, l] + diff1_rk3)
+        # diff1_rk4 = (qflow / volume_element *(cX[k, l-1] - (cX[k, l] + diff1_rk3)) + rX_rk1[k, l]) * dt
 
-        diff1_rk = 1/6 *(diff1_rk1 + 2 * diff1_rk2 + 2 * diff1_rk3 + diff1_rk4)
-    
-        cX[k+1, l] = cX[k, l] + diff1_rk
+        # diff1_rk = 1/6 *(diff1_rk1 + 2 * diff1_rk2 + 2 * diff1_rk3 + diff1_rk4)
+
+        if (l == a):
+            SSin =  A
+        elif (l = b):
+            SSin = B
+        else:
+            SSin = ck[k, l-1]
+
+        
+        cX[k+1, l] = cX[k, l] + runge_kutta(SSin,)[0]
 
         if cX[k+1, l] < 0:
             cX[k+1, l] = 0
