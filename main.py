@@ -1,6 +1,8 @@
 import numpy as np
+from numpy import log10
 import matplotlib.pyplot as plt
 from collections import namedtuple
+from IPython.core.pylabtools import figsize
 from util import runge_kutta
 
 # 排水流入ポイント
@@ -8,7 +10,7 @@ a = 334
 b = 531
 
 #  ITEMS FOR NUMERICAL CALCULATION
-tvec = np.arange(0, 4, 0.0001)  # time vector
+tvec = np.arange(0, 0.1, 0.001)  # time vector
 dvec = np.arange(0, 7775.04, 7.12)  # distance vector
 v1 = 2.734
 v2 = 3.752
@@ -83,7 +85,19 @@ cXS[:, 0] = 0
 cXI[0, :] = 0
 cXI[:, 0] = 0
 
-qflow = 8031.85
+# 初期値
+SO2in0=5.0
+SCO2in0=0.1
+SHCO3in0=0.1
+SCO3in0=0.1
+SHin0=0.0001
+SOHin0=0.0001
+SCain0=0.1
+XHin0=10.0
+XN1in0=0.1
+XN2in0=0.05
+XALGin0=1.0
+XCONin0=0.1
 
 # turning point of seasonal variation
 dt = 0.001  # time step
@@ -336,32 +350,32 @@ for i in range(1, tvec.size-1):
 	
         # space evolution
         if j == 1:
-            SSin=fc.SSin0a
-            SIin=fc.SIin0a
-            SNH4in=fc.SNH4in0a
-            SNH3in=fc.SNH3in0a
+            SSin=fc.SSin0a 
+            SIin=fc.SIin0a 
+            SNH4in=fc.SNH4in0a 
+            SNH3in=fc.SNH3in0a  
             SNO2in=fc.SNO2in0a+fc.SNO2inGa
             SNO3in=fc.SNO3in0a+fc.SNO3inGa
             SHPO4in=fc.SHPO4in0a
             SH2PO4in=fc.SH2PO4in0a
-            SO2in=fc.SO2in0
-            SCO2in=fc.SCO2in0
-            SHCO3in=fc.SHCO3in0
-            SCO3in=fc.SCO3in0
-            SHin=fc.SHin0
-            SOHin=fc.SOHin0
-            SCain=fc.SCain0
-            XHin=fc.XHin0
-            XN1in=fc.XN1in0
-            XN2in=fc.XN2in0
-            XALGin=fc.XALGin0
-            XCONin=fc.XCONin0
+            SO2in=SO2in0
+            SCO2in=SCO2in0
+            SHCO3in=SHCO3in0
+            SCO3in=SCO3in0
+            SHin=SHin0
+            SOHin=SOHin0
+            SCain=SCain0
+            XHin=XHin0
+            XN1in=XN1in0
+            XN2in=XN2in0
+            XALGin=XALGin0
+            XCONin=XCONin0
             XSin=fc.XSin0a
             XIin=fc.XIin0a
-            TSin=fc.TSin0
+            # TSin=fc.TSin0
             q=fc.q1
             vb=fc.u1
-            v=fc.v1
+            v=v1
             Ma=fc.Ma1
         
         
@@ -391,7 +405,7 @@ for i in range(1, tvec.size-1):
             #TSin=cTS[i, j-1]
             q=fc.q1
             vb=fc.u1
-            v=fc.v1
+            v=v1
             Ma=fc.Ma1
         
         elif j==a:
@@ -420,7 +434,7 @@ for i in range(1, tvec.size-1):
             #TSin=cTS[i, j-1]
             q=fc.q2
             vb=fc.u2
-            v=fc.v2
+            v=v2
             Ma=fc.Ma2
         
         elif j>=a+1 and j<=b-1:
@@ -449,7 +463,7 @@ for i in range(1, tvec.size-1):
             # TSin=cTS[i, j-1]
             q=fc.q2
             vb=fc.u2
-            v=fc.v2
+            v=v2
             Ma=fc.Ma2
         
         elif j == b:
@@ -478,7 +492,7 @@ for i in range(1, tvec.size-1):
             # TSin=cTS[i, j-1]
             q=fc.q3
             vb=fc.u3
-            v=fc.v3
+            v=v3
             Ma=fc.Ma3
         
         elif j>=b+1:
@@ -507,164 +521,202 @@ for i in range(1, tvec.size-1):
             # TSin=cTS[i, j-1]
             q=fc.q3
             vb=fc.u3
-            v=fc.v3
+            v=v3
             Ma=fc.Ma3
         
-        # (1) concentration of SS
-        cSS[i+1, j] = cSS[i, j] + runge_kutta(SSin, SIin, SNH4in, SNH3in, SNO2in, SNO3in, SHPO4in, SH2PO4in, SO2in, SCO2in, SHCO3in, SCO3in, SHin, SOHin, SCain,\
+        diff_list = runge_kutta(SSin, SIin, SNH4in, SNH3in, SNO2in, SNO3in, SHPO4in, SH2PO4in, SO2in, SCO2in, SHCO3in, SCO3in, SHin, SOHin, SCain,\
              XHin, XN1in, XN2in, XALGin, XCONin, XSin, XIin, \
                  cSS[i, j], cSI[i, j], cSNH4[i, j], cSNH3[i, j], cSNO2[i, j], cSNO3[i, j], cSHPO4[i, j], cSH2PO4[i, j], cSO2[i, j], cSCO2[i, j], cSHCO3[i, j], cSCO3[i, j], cSH[i, j], cSOH[i, j], cSCa[i, j], \
-                     cXH[i, j], cXN1[i, j], cXN2[i, j], cXALG[i, j], cXCON[i, j], cXS[i, j], cXI[i, j], fc.T, fc.q, fc.v, fc.Ie, fc.Ma, fc.vb, fc.XHin0, fc.XN1in0, fc.XN2in0, fc.XALGin0, fc.XCONin0, fc.XSin0a, fc.XSin0b, fc.XSin0c, fc.XIin0a, fc.XIin0b, fc.XIin0c)[0]
+                     cXH[i, j], cXN1[i, j], cXN2[i, j], cXALG[i, j], cXCON[i, j], cXS[i, j], cXI[i, j], fc.T, q, v, fc.Ie, Ma, vb, XHin0, XN1in0, XN2in0, XALGin0, XCONin0, fc.XSin0a, fc.XSin0b, fc.XSin0c, fc.XIin0a, fc.XIin0b, fc.XIin0c)
+
+        # (1) concentration of SS
+        cSS[i+1, j] = cSS[i, j] + diff_list[0]
 
         if cSS[i+1, j] < 0:
             cSS[i+1, j] = 0
 
         # (2) concentration of SI        
-        cSI[i+1, j] = cSI[i, j] + runge_kutta(SSin, SIin, SNH4in, SNH3in, SNO2in, SNO3in, SHPO4in, SH2PO4in, SO2in, SCO2in, SHCO3in, SCO3in, SHin, SOHin, SCain,\
-             XHin, XN1in, XN2in, XALGin, XCONin, XSin, XIin, \
-                 cSS[i, j], cSI[i, j], cSNH4[i, j], cSNH3[i, j], cSNO2[i, j], cSNO3[i, j], cSHPO4[i, j], cSH2PO4[i, j], cSO2[i, j], cSCO2[i, j], cSHCO3[i, j], cSCO3[i, j], cSH[i, j], cSOH[i, j], cSCa[i, j], \
-                     cXH[i, j], cXN1[i, j], cXN2[i, j], cXALG[i, j], cXCON[i, j], cXS[i, j], cXI[i, j], fc.T, fc.q, fc.v, fc.Ie, fc.Ma, fc.vb, fc.XHin0, fc.XN1in0, fc.XN2in0, fc.XALGin0, fc.XCONin0, fc.XSin0a, fc.XSin0b, fc.XSin0c, fc.XIin0a, fc.XIin0b, fc.XIin0c)[1]
+        cSI[i+1, j] = cSI[i, j] + diff_list[1]
 
         if cSI[i+1, j] < 0:
             cSI[i+1, j] = 0
 
         # (3) concentration of SNH4       
-        cSNH4[i+1, j] = cSNH4[i, j] + runge_kutta()[2]
+        cSNH4[i+1, j] = cSNH4[i, j] + diff_list[2]
 
         if cSNH4[i+1, j] < 0:
             cSNH4[i+1, j] = 0
         
         # (4) concentration of SNH3       
-        cSNH3[i+1, j] = cSNH3[i, j] + runge_kutta()[3]
+        cSNH3[i+1, j] = cSNH3[i, j] + diff_list[3]
 
         if cSNH3[i+1, j] < 0:
             cSNH3[i+1, j] = 0
         
         # (5) concentration of SNO2       
-        cSNO2[i+1, j] = cSNO2[i, j] + runge_kutta()[4]
+        cSNO2[i+1, j] = cSNO2[i, j] + diff_list[4]
 
         if cSNO2[i+1, j] < 0:
             cSNO2[i+1, j] = 0
 
         # (6) concentration of SNO3       
-        cSNO3[i+1, j] = cSNO3[i, j] + runge_kutta()[5]
+        cSNO3[i+1, j] = cSNO3[i, j] + diff_list[5]
 
         if cSNO3[i+1, j] < 0:
             cSNO3[i+1, j] = 0
 
         # (7) concentration of SHPO4       
-        cSHPO4[i+1, j] = cSHPO4[i, j] + runge_kutta()[6]
+        cSHPO4[i+1, j] = cSHPO4[i, j] + diff_list[6]
 
         if cSHPO4[i+1, j] < 0:
             cSHPO4[i+1, j] = 0
 
         # (8) concentration of SH2PO4       
-        cSH2PO4[i+1, j] = cSH2PO4[i, j] + runge_kutta()[7]
+        cSH2PO4[i+1, j] = cSH2PO4[i, j] + diff_list[7]
 
         if cSH2PO4[i+1, j] < 0:
             cSH2PO4[i+1, j] = 0
 
         # (9) concentration of SO2       
-        cSO2[i+1, j] = cSO2[i, j] + runge_kutta()[8]
+        cSO2[i+1, j] = cSO2[i, j] + diff_list[8]
 
         if cSO2[i+1, j] < 0:
             cSO2[i+1, j] = 0
 
         # (10) concentration of SCO2       
-        cSCO2[i+1, j] = cSCO2[i, j] + runge_kutta()[9]
+        cSCO2[i+1, j] = cSCO2[i, j] + diff_list[9]
 
         if cSCO2[i+1, j] < 0:
             cSCO2[i+1, j] = 0
 
         # (11) concentration of SHCO3       
-        cSHCO3[i+1, j] = cSHCO3[i, j] + runge_kutta()[10]
+        cSHCO3[i+1, j] = cSHCO3[i, j] + diff_list[10]
 
         if cSHCO3[i+1, j] < 0:
             cSHCO3[i+1, j] = 0
 
         # (12) concentration of SCO3       
-        cSCO3[i+1, j] = cSCO3[i, j] + runge_kutta()[11]
+        cSCO3[i+1, j] = cSCO3[i, j] + diff_list[11]
 
         if cSCO3[i+1, j] < 0:
             cSCO3[i+1, j] = 0
 
         # (13) concentration of SH       
-        cSH[i+1, j] = cSH[i, j] + runge_kutta()[12]
+        cSH[i+1, j] = cSH[i, j] + diff_list[12]
 
         if cSH[i+1, j] < 0:
             cSH[i+1, j] = 0
 
         # (14) concentration of SOH       
-        cSOH[i+1, j] = cSOH[i, j] + runge_kutta()[13]
+        cSOH[i+1, j] = cSOH[i, j] + diff_list[13]
 
         if cSOH[i+1, j] < 0:
             cSOH[i+1, j] = 0
 
         # (15) concentration of SCa       
-        cSCa[i+1, j] = cSCa[i, j] + runge_kutta()[14]
+        cSCa[i+1, j] = cSCa[i, j] + diff_list[14]
 
         if cSCa[i+1, j] < 0:
             cSCa[i+1, j] = 0
 
         # (16) concentration of XH       
-        cXH[i+1, j] = cXH[i, j] + runge_kutta()[15]
+        cXH[i+1, j] = cXH[i, j] + diff_list[15]
 
         if cXH[i+1, j] < 0:
             cXH[i+1, j] = 0
 
         # (17) concentration of XN1      
-        cXN1[i+1, j] = cXN1[i, j] + runge_kutta()[16]
+        cXN1[i+1, j] = cXN1[i, j] + diff_list[16]
 
         if cXN1[i+1, j] < 0:
             cXN1[i+1, j] = 0
         
         # (18) concentration of XN2       
-        cXN2[i+1, j] = cXN2[i, j] + runge_kutta()[17]
+        cXN2[i+1, j] = cXN2[i, j] + diff_list[17]
 
         if cXN2[i+1, j] < 0:
             cXN2[i+1, j] = 0
 
         # (19) concentration of XALG
-        cXALG[i+1, j] = cXALG[i, j] + runge_kutta()[18]
+        cXALG[i+1, j] = cXALG[i, j] + diff_list[18]
 
         if cXALG[i+1, j] < 0:
             cXALG[i+1, j] = 0
 
         # (20) concentration of XCON
-        cXCON[i+1, j] = cXCON[i, j] + runge_kutta()[19]
+        cXCON[i+1, j] = cXCON[i, j] + diff_list[19]
 
         if cXCON[i+1, j] < 0:
             cXCON[i+1, j] = 0
 
         # (21) concentration of XS
-        cXS[i+1, j] = cXS[i, j] + runge_kutta()[20]
+        cXS[i+1, j] = cXS[i, j] + diff_list[20]
 
         if cXS[i+1, j] < 0:
             cXS[i+1, j] = 0
 
         # (22) concentration of XI
-        cXI[i+1, j] = cXI[i, j] + runge_kutta()[21]
+        cXI[i+1, j] = cXI[i, j] + diff_list[21]
 
         if cXI[i+1, j] < 0:
             cXI[i+1, j] = 0
 
 
 # plot results
-plt.subplot(3, 1, 1)
-plt.plot(tvec, cX[:, -1])
-plt.xlabel('time[day]')
-plt.ylabel('SS concentration')
-plt.ylim(0, cX.max())
-plt.subplot(3, 1, 2)
-plt.plot(tvec, cS[:, -1])
-plt.xlabel('time[day]')
-plt.ylabel('BOD concentraion')
-plt.ylim(0, cS.max())
-plt.subplot(3, 1, 3)
-plt.plot(tvec, cO2[:, -1])
-plt.xlabel('time[day]')
+figsize(12, 18)
+
+plt.subplot(3, 2, 1)
+plt.plot(tvec, cSO2[:, a], label='st1')
+plt.plot(tvec, cSO2[:, b], label='st2')
+plt.xlabel('time')
 plt.ylabel('DO concentration')
-plt.ylim(0, cO2.max())
+plt.ylim(0, cSO2.max())
+
+plt.subplot(3, 2, 2)
+cBOD = cSS + cXS
+plt.plot(tvec, cBOD[:, a], label='st1')
+plt.plot(tvec, cBOD[:, b], label='st2')
+plt.xlabel('time')
+plt.ylabel('BOD concentraion')
+plt.ylim(0, cBOD.max())
+plt.legend(loc="upper right")
+
+plt.subplot(3, 2, 3)
+cXX = cXS + cXN1 + cXN2 + cXALG + cXCON + cXH + cXI
+plt.plot(tvec, cXX[:, a], label='st1')
+plt.plot(tvec, cXX[:, b], label='st2')
+plt.xlabel('time')
+plt.ylabel('SS concentration')
+plt.ylim(0, cXX.max())
+plt.legend(loc="upper right")
+
+plt.subplot(3, 2, 4)
+plt.plot(tvec, cSNH4[:, a], label='st1')
+plt.plot(tvec, cSNH4[:, b], label='st2')
+plt.xlabel('time')
+plt.ylabel('SNH4 concentration')
+plt.ylim(0, cSNH4.max())
+plt.legend(loc="upper right")
+
+plt.subplot(3, 2, 5)
+cSNOX = cSNO2 + cSNO3
+plt.plot(tvec, cSNOX[:, a], label='st1')
+plt.plot(tvec, cSNOX[:, b], label='st2')
+plt.xlabel('time')
+plt.ylabel('NO2-N + NO3-N concentration')
+plt.ylim(0, cSNOX.max())
+plt.legend(loc="upper right")
+
+# plt.subplot(3, 2, 6)
+# cPh = -log10(10^-3 * cSH)
+# plt.plot(tvec, cPh[:, a], label='st1')
+# plt.plot(tvec, cPh[:, b], label='st2')
+# plt.xlabel('time')
+# plt.ylabel('ph concentration')
+# plt.ylim(0, cPh.max())
+# plt.legend(loc="upper right")
+
+
 plt.show()
 
 

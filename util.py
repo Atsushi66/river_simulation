@@ -1,5 +1,6 @@
 import numpy as np
 
+
 w = 9.849
 As = 28.48
 
@@ -11,7 +12,7 @@ KeqN=0.00000034
 KeqP=0.000061
 Keqso=1.97
 
-dt = 0.001
+dt = 0.01
 
 
 # IWA RWQM No.1 matrix
